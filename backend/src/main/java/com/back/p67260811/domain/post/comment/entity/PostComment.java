@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostComment extends BaseEntity {
@@ -22,4 +21,13 @@ public class PostComment extends BaseEntity {
     public void modify(String content) {
         this.content = content;
     }
+
+    public String getContent() {
+        return content;
+    }
+
+    public Post getPost() {
+        return post;
+    }
+
 }
