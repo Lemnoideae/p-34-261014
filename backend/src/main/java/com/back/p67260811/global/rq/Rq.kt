@@ -1,87 +1,70 @@
-package com.back.p67260811.global.rq;
+package com.back.p67260811.global.rq
 
-import com.back.p67260811.domain.member.entity.Member;
-import com.back.p67260811.domain.member.service.MemberService;
-import com.back.p67260811.global.exception.ServiceException;
-import com.back.p67260811.global.security.SecurityUser;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.stereotype.Component;
-import org.springframework.web.context.annotation.RequestScope;
-
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Optional;
+import com.back.p67260811.domain.member.entity.Member
+import com.back.p67260811.domain.member.service.MemberService
+import com.back.p67260811.global.exception.ServiceException
+import com.back.p67260811.global.security.SecurityUser
+import jakarta.servlet.http.Cookie
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.stereotype.Component
 
 @Component
-@RequiredArgsConstructor
-public class Rq {
+class Rq(
+    private val memberService: MemberService,
+    private val request: HttpServletRequest,
+    private val response: HttpServletResponse
+) {
 
-    private final MemberService memberService;
-    private final HttpServletRequest request;
-    private final HttpServletResponse response;
+    val actor: Member
+        get() {
+            return SecurityContextHolder.getContext()
+                .authentication
+                ?.principal
+                ?.let {
+                    if (it is SecurityUser)
+                        Member(
+                            it.id,
+                            it.username,
+                            it.nickname
+                        )
+                    else null
+                } ?: throw ServiceException("401-1", "인증 실패")
+        }
 
-    public Member getActor() {
-
-        // 인증된 사용자 정보 꺼내서 제공
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        SecurityUser user = (SecurityUser) authentication.getPrincipal();
-
-        return new Member(user.getId(), user.getUsername(), user.getNickname());
-
+    fun setHeader(name: String, value: String) {
+        response.setHeader(name, value)
     }
 
-    public void setHeader(String name, String value) {
-        response.setHeader(name, value);
+    fun getCookieValue(name: String, defaultValue: String): String = request
+        .cookies
+        .firstOrNull { it.name == name }
+        ?.value
+        ?.takeIf { it.isNotBlank() }
+        ?: defaultValue
+
+    fun addCookie(name: String, value: String) {
+        val cookie = Cookie(name, value).apply {
+            domain = "localhost"
+            path = "/"
+            isHttpOnly = true
+        }.also {
+            response.addCookie(it)
+        }
     }
 
-
-    public String getCookieValue(String name, String defaultValue) {
-        return Optional
-                .ofNullable(request.getCookies())
-                .flatMap(
-                        cookies ->
-                                Arrays.stream(cookies)
-                                        .filter(cookie -> cookie.getName().equals(name))
-                                        .map(Cookie::getValue)
-                                        .filter(value -> !value.isBlank())
-                                        .findFirst()
-                )
-                .orElse(defaultValue);
+    fun deleteCookie(name: String) {
+        val cookie = Cookie(name, "").apply {
+            domain = "localhost"
+            path = "/"
+            isHttpOnly = true
+            maxAge = 0
+        }.also {
+            response.addCookie(it)
+        }
     }
 
-    public void addCookie(String name, String value) {
-        Cookie cookie = new Cookie(name, value);
-        cookie.setDomain("localhost");
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-
-        response.addCookie(cookie);
-    }
-
-    public void deleteCookie(String name) {
-
-        Cookie cookie = new Cookie(name, "");
-        cookie.setHttpOnly(true);
-        cookie.setDomain("localhost");
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-
-        response.addCookie(cookie);
-
-    }
-
-    public String getHeader(String name, String defaultValue) {
-        return Optional
-                .ofNullable(request.getHeader(name))
-                .filter(headerValue -> !headerValue.isBlank())
-                .orElse(defaultValue);
-    }
-
+    fun getHeader(name: String, defaultValue: String): String = request
+        .getHeader(name) ?: defaultValue
 }
