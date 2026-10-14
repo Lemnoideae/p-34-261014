@@ -10,7 +10,7 @@ import java.net.UnknownHostException;
 @RestController
 public class HomeController {
 
-    @GetMapping(produces = MediaType.TEXT_HTML_VALUE)
+    @GetMapping(value = "/index", produces = MediaType.TEXT_HTML_VALUE)
     public String home() throws UnknownHostException {
 
         InetAddress localhost = InetAddress.getLocalHost();

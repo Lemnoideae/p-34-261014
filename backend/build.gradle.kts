@@ -1,12 +1,15 @@
 plugins {
-    java
-    id("org.springframework.boot") version "4.1.0"
+    kotlin("jvm") version "2.3.21"
+    kotlin("plugin.spring") version "2.3.21"
+    id("org.springframework.boot") version "4.1.1"
     id("io.spring.dependency-management") version "1.1.7"
+    kotlin("plugin.jpa") version "2.3.21"
+    kotlin("plugin.lombok") version "2.3.21"
 }
 
 group = "com.back"
 version = "0.0.1-SNAPSHOT"
-description = "p-67-260811"
+description = "kopring-261014"
 
 java {
     toolchain {
@@ -41,6 +44,20 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testAnnotationProcessor("org.projectlombok:lombok")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.0")
+    testImplementation(kotlin("test"))
+}
+
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.addAll(
+            "-Xjsr305=strict",
+            "-Xannotation-default-target=param-property"
+        )
+    }
+}
+
+allOpen {
+
 }
 
 tasks.withType<Test> {
