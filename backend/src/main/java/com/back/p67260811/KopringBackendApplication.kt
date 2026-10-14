@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 
 @SpringBootApplication
 @EnableJpaAuditing
-class P67260811Application
+class KopringBackendApplication
 
 fun main(args: Array<String>) {
-    runApplication<P67260811Application>(*args)
+    runApplication<KopringBackendApplication>(*args)
 }

@@ -1,8 +1,6 @@
 package com.back.p67260811.domain.post.post.controller;
 
-import com.back.p67260811.domain.member.entity.Member;
 import com.back.p67260811.domain.post.post.service.PostService;
-import com.back.p67260811.global.exception.ServiceException;
 import com.back.p67260811.global.rq.Rq;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

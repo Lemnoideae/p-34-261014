@@ -43,15 +43,14 @@ dependencies {
     testCompileOnly("org.projectlombok:lombok")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testAnnotationProcessor("org.projectlombok:lombok")
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1")
     testImplementation(kotlin("test"))
 }
 
 kotlin {
     compilerOptions {
         freeCompilerArgs.addAll(
-            "-Xjsr305=strict",
-            "-Xannotation-default-target=param-property"
+            "-Xjsr305=strict"
         )
     }
 }
