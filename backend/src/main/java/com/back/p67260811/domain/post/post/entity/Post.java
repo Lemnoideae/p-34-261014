@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
-@Getter
 @Entity
 public class Post extends BaseEntity {
     private String title;
@@ -78,5 +77,21 @@ public class Post extends BaseEntity {
         if(!(this.author.getId() == actor.getId())) {
             throw new ServiceException("403-2", "삭제 권한이 없습니다.");
         }
+    }
+
+    public List<PostComment> getComments() {
+        return comments;
+    }
+
+    public Member getAuthor() {
+        return author;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public String getTitle() {
+        return title;
     }
 }
