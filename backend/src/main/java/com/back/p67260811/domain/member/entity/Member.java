@@ -23,7 +23,7 @@ public class Member extends BaseEntity {
     private String apiKey; // 나중에 활용 -> 리프레시 토큰
 
     public Member(int id, String username, String nickname) {
-        this.id = id;
+        this.setId(id);
         this.username = username;
         this.nickname = nickname;
     }
@@ -46,7 +46,7 @@ public class Member extends BaseEntity {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
 
-        if(isAdmin()) {
+        if (isAdmin()) {
             authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
         }
 
@@ -65,7 +65,5 @@ public class Member extends BaseEntity {
         return password;
     }
 
-    public String getUsername() {
-        return username;
-    }
+    public String getUsername() { return username; }
 }

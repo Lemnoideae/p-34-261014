@@ -1,38 +1,21 @@
-package com.back.p67260811.global.jpa.entity;
+package com.back.p67260811.global.jpa.entity
 
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.time.LocalDateTime;
+import jakarta.persistence.*
+import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.annotation.LastModifiedDate
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
+import java.time.LocalDateTime
 
 @MappedSuperclass
-@EntityListeners(AuditingEntityListener.class)
-public abstract class BaseEntity {
-
+@EntityListeners(AuditingEntityListener::class)
+abstract class BaseEntity(
     @Id
-    @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
-    protected int id;
-
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Int = 0
+) {
     @CreatedDate
-    private LocalDateTime createDate;
+    lateinit var createDate: LocalDateTime
 
     @LastModifiedDate
-    private LocalDateTime modifyDate;
-
-    public int getId() {
-        return id;
-    }
-
-    public LocalDateTime getCreateDate() {
-        return createDate;
-    }
-
-    public LocalDateTime getModifyDate() {
-        return modifyDate;
-    }
+    lateinit var modifyDate: LocalDateTime
 }
