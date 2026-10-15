@@ -58,8 +58,8 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public RsData<Void> handleException(ServiceException e) {
         return new RsData<>(
-                e.getResultCode(),
-                e.getMsg()
+                e.resultCode,
+                e.msg
         );
 
     }
