@@ -1,8 +1,6 @@
 package com.back.p67260811.global.dto
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import lombok.AllArgsConstructor
-import lombok.Getter
 
 class RsData<T>(
     private val resultCode: String,
@@ -17,6 +15,7 @@ class RsData<T>(
             .dropLastWhile { it.isEmpty() }
             .toTypedArray()[0].toInt() // "201-1"
 
+    fun getData() : T? = data
     fun getResultCode() : String = resultCode
     fun getMsg() : String = msg
 }
