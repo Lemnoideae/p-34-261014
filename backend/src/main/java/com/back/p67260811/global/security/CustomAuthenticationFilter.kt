@@ -89,6 +89,17 @@ class CustomAuthenticationFilter(
         }
 
         val isAccessTokenExists = accessToken.isNotBlank()
+        val isApiKeyExists = apiKey.isNotBlank()
+
+        if (!isApiKeyExists && !isAccessTokenExists) {
+            filterChain.doFilter(request, response)
+            return
+        }
+
+        if (!isApiKeyExists) {
+            throw ServiceException("401-1", "로그인 후 이용해주세요.")
+        }
+
         val tokenMember = if (isAccessTokenExists) {
             memberService.payloadOrNull(accessToken)?.let { payload ->
                 Member(
