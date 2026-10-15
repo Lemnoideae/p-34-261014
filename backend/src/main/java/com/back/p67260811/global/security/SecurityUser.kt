@@ -7,7 +7,7 @@ class SecurityUser(
     val id: Int,
     val nickname: String,
     username: String,
-    password: String?,
+    password: String,
     authorities: Collection<GrantedAuthority>
 ): User(username, password, authorities) {
 }
