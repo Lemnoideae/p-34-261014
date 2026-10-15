@@ -9,13 +9,10 @@ import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 import java.io.IOException
-import java.util.function.Supplier
 
 @Component
 class CustomAuthenticationFilter(
@@ -54,41 +51,42 @@ class CustomAuthenticationFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-       if (!request.requestURI.startsWith("/api/")) {
-           filterChain.doFilter(request, response)
-           return
-       }
 
-       if (request.requestURI in listOf<String>(
-               "/api/v1/members/join",
-               "/api/v1/members/login")
-       ) {
-           filterChain.doFilter(request, response)
-           return
-       }
+        if (!request.requestURI.startsWith("/api/")) {
+            filterChain.doFilter(request, response)
+            return
+        }
 
+        if (request.requestURI in listOf(
+                "/api/v1/members/join",
+                "/api/v1/members/login"
+            )
+        ) {
+            filterChain.doFilter(request, response)
+            return
+        }
 
-       val apiKey: String
-       val accessToken: String
+        val apiKey: String
+        val accessToken: String
 
-       val headerAuthorization = rq.getHeader("Authorization", "")
+        val headerAuthorization = rq.getHeader("Authorization", "")
 
-       if (headerAuthorization.isNotBlank()) {
-           if (!headerAuthorization.startsWith("Bearer ")) throw ServiceException(
-               "401-2",
-               "Authorization 헤더가 Bearer 형식이 아닙니다."
-           )
+        if (headerAuthorization.isNotBlank()) {
+            if (!headerAuthorization.startsWith("Bearer ")) throw ServiceException(
+                "401-2",
+                "Authorization 헤더가 Bearer 형식이 아닙니다."
+            )
 
-           val parts =
-               headerAuthorization.split(" ", limit = 3)
+            val parts =
+                headerAuthorization.split(" ", limit = 3)
 
-           apiKey = parts[1]
-           accessToken = parts.getOrElse(2) { "" }
+            apiKey = parts[1]
+            accessToken = parts.getOrElse(2) { "" }
 
-       } else {
-           apiKey = rq.getCookieValue("apiKey", "")
-           accessToken = rq.getCookieValue("accessToken", "")
-       }
+        } else {
+            apiKey = rq.getCookieValue("apiKey", "")
+            accessToken = rq.getCookieValue("accessToken", "")
+        }
 
         val isAccessTokenExists = accessToken.isNotBlank()
         val tokenMember = if (isAccessTokenExists) {
@@ -118,7 +116,7 @@ class CustomAuthenticationFilter(
             id = member.id,
             nickname = member.nickname,
             username = member.username,
-            password = member.password?: "",
+            password = member.password ?: "",
             authorities = member.getAuthorities()
         )
 
