@@ -12,10 +12,14 @@
         <module name="p-67-260811.test" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="kotlin-backend-application" target="25" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="kopring-261014" options="-parameters" />
+      <module name="kotlin-backend-application" options="-parameters" />
       <module name="p-67-260811" options="-parameters" />
       <module name="p-67-260811.main" options="-parameters" />
       <module name="p-67-260811.test" options="-parameters" />
