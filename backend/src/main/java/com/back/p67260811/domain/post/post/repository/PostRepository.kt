@@ -1,9 +1,6 @@
-package com.back.p67260811.domain.post.post.repository;
+package com.back.p67260811.domain.post.post.repository
 
-import com.back.p67260811.domain.post.post.entity.Post;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.back.p67260811.domain.post.post.entity.Post
+import org.springframework.data.jpa.repository.JpaRepository
 
-import java.util.Optional;
-
-public interface PostRepository extends JpaRepository<Post, Integer> {
-}
+interface PostRepository : JpaRepository<Post, Int>
