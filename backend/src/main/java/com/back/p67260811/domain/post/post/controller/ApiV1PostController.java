@@ -6,7 +6,6 @@ import com.back.p67260811.domain.post.post.dto.PostDto;
 import com.back.p67260811.domain.post.post.entity.Post;
 import com.back.p67260811.domain.post.post.service.PostService;
 import com.back.p67260811.global.dto.RsData;
-import com.back.p67260811.global.exception.ServiceException;
 import com.back.p67260811.global.rq.Rq;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -14,7 +13,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,7 +44,7 @@ public class ApiV1PostController {
             @PathVariable int id
     ) {
 
-        Post post = postService.findById(id).get();
+        Post post = postService.findById(id);
 
 
         return new PostDto(post);
@@ -99,7 +97,7 @@ public class ApiV1PostController {
     ) {
 
         Member actor = rq.getActor();
-        Post post = postService.findById(id).get();
+        Post post = postService.findById(id);
         post.checkActorModify(actor);
 
         postService.modify(post, reqBody.title, reqBody.content);
@@ -116,7 +114,7 @@ public class ApiV1PostController {
     ) {
 
         Member actor = rq.getActor();
-        Post post = postService.findById(id).get();
+        Post post = postService.findById(id);
         post.checkActorDelete(actor);
 
         postService.delete(id);

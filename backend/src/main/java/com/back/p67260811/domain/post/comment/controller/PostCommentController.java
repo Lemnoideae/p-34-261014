@@ -25,7 +25,7 @@ public class PostCommentController {
     public List<PostCommentDto> list(
             @PathVariable int postId
     ) {
-        Post post = postService.findById(postId).get();
+        Post post = postService.findById(postId);
 
         return post.getComments()
                 .stream()
@@ -38,7 +38,7 @@ public class PostCommentController {
             @PathVariable int postId,
             @PathVariable int commentId
     ) {
-        Post post = postService.findById(postId).get();
+        Post post = postService.findById(postId);
         PostComment postComment = postService.findCommentById(post, commentId);
 
         return new PostCommentDto(postComment);
@@ -59,7 +59,7 @@ public class PostCommentController {
             @Valid CommentWriteForm form
     ) {
 
-        Post post = postService.findById(postId).get();
+        Post post = postService.findById(postId);
         PostComment postComment = postService.writeComment(post, form.content);
         // DB 저장
         postService.flush();
@@ -77,7 +77,7 @@ public class PostCommentController {
             @PathVariable int commentId
     ) {
 
-        Post post = postService.findById(postId).get();
+        Post post = postService.findById(postId);
         postService.deleteComment(post, commentId);
 
         return new RsData<>(
@@ -102,7 +102,7 @@ public class PostCommentController {
             @Valid CommentModifyForm form
     ) {
 
-        Post post = postService.findById(postId).get();
+        Post post = postService.findById(postId);
         postService.modifyComment(post, commentId, form.content);
 
         return new RsData<>(
