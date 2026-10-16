@@ -65,8 +65,8 @@ class ApiV1MemberController(
         @RequestBody @Valid reqBody: @Valid LoginReqBody
     ): RsData<LoginResBody> {
 
-        val actor = memberService.findByUsername(reqBody.username)
-            .orElseThrow { ServiceException("401-1", "존재하지 않는 회원입니다.") }
+        val actor = memberService.findByUsernameOrNull(reqBody.username)
+            ?: throw ServiceException("401-1", "존재하지 않는 회원입니다.")
 
         memberService.checkPassword(
             reqBody.password,
@@ -110,7 +110,7 @@ class ApiV1MemberController(
     fun me(): RsData<MeResBody> {
         val actor = rq.actor // 인증
         val realActor =
-            actor.id?.let { memberService.findById(it) }?.get() // 인증된 사용자 정보 가져오기
+            actor.id?.let { memberService.findById(it) }
 
         return RsData(
             "200-1",

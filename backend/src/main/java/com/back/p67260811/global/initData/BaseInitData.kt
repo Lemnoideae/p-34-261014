@@ -32,8 +32,8 @@ class BaseInitData(
 
         if (postService.count() > 0) return
 
-        val member1 = memberService.findByUsername("user1").get()
-        val member2 = memberService.findByUsername("user2").get()
+        val member1 = memberService.findByUsername("user1")
+        val member2 = memberService.findByUsername("user2")
 
         postService.write(member1, "제목1", "내용1").apply {
             addComment("댓글 1-1")

@@ -112,10 +112,8 @@ class CustomAuthenticationFilter(
             null
         }
 
-        val member = tokenMember
-            ?: memberService.findByApiKey(apiKey).orElseThrow {
-                ServiceException("401-3", "API 키가 유효하지 않습니다.")
-            }
+        val member = tokenMember ?: memberService.findByApiKeyOrNull(apiKey)
+            ?: throw ServiceException("401-3", "API 키가 유효하지 않습니다.")
 
         if (isAccessTokenExists && tokenMember == null) {
             val newAccessToken = memberService.genAccessToken(member)

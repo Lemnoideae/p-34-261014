@@ -1,75 +1,76 @@
-package com.back.p67260811.domain.member.service;
+package com.back.p67260811.domain.member.service
 
-import com.back.p67260811.domain.member.entity.Member;
-import com.back.p67260811.domain.member.repository.MemberRepository;
-import com.back.p67260811.global.exception.ServiceException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.MutablePropertyValues;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import com.back.p67260811.domain.member.entity.Member
+import com.back.p67260811.domain.member.repository.MemberRepository
+import com.back.p67260811.global.exception.ServiceException
+import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.stereotype.Service
+import java.util.*
 
 @Service
-@RequiredArgsConstructor
-public class MemberService {
+class MemberService(
+    private val memberRepository: MemberRepository,
+    private val authTokenService: AuthTokenService,
+    private val passwordEncoder: PasswordEncoder
+) {
 
-    private final MemberRepository memberRepository;
-    private final AuthTokenService authTokenService;
-    private final PasswordEncoder passwordEncoder;
-
-    public long count() {
-        return memberRepository.count();
+    fun count(): Long {
+        return memberRepository.count()
     }
 
-    public Member join(String username, String password, String nickname) {
-        return join(username, password, nickname, null);
-    }
+    @JvmOverloads
+    fun join(
+        username: String,
+        password: String?,
+        nickname: String?,
+        apiKey: String? = null
+    ): Member {
+        val apiKey = apiKey ?: UUID.randomUUID().toString()
 
-    public Member join(String username, String password, String nickname, String apiKey) {
-
-        if (memberRepository.findByUsername(username).isPresent()) {
-            throw new ServiceException("409-1", "이미 사용중인 아이디입니다.");
+        if (memberRepository.findByUsername(username).isPresent) {
+            throw ServiceException("409-1", "이미 사용중인 아이디입니다.")
         }
 
-        if(apiKey == null) {
-            apiKey = UUID.randomUUID().toString();
+        val member =
+            Member(username, passwordEncoder.encode(password), nickname, apiKey)
+        return memberRepository.save<Member>(member)
+    }
+
+    fun findByUsername(username: String): Member =
+        findByUsernameOrNull(username) ?: throw ServiceException(
+            "404-1",
+            "존재하지 않는 아이디입니다."
+        )
+
+    fun findByUsernameOrNull(username: String): Member? =
+        memberRepository.findByUsername(username).orElse(null)
+
+    fun findByApiKey(apiKey: String): Member =
+        findByApiKeyOrNull(apiKey) ?: throw ServiceException(
+            "404-2",
+            "존재하지 않는 API 키입니다."
+        )
+
+    fun findByApiKeyOrNull(apiKey: String): Member? =
+        memberRepository.findByApiKey(apiKey).orElse(null)
+
+    fun genAccessToken(member: Member): String =
+        authTokenService.genAccessToken(member)
+
+    fun payloadOrNull(jwt: String): Map<String, Any>? =
+        authTokenService.payloadOrNull(jwt)
+
+    fun findById(id: Int): Member = memberRepository.findById(id).orElseThrow {
+            ServiceException("404-3", "존재하지 않는 회원입니다.")
         }
 
-        Member member = new Member(username, passwordEncoder.encode(password), nickname, apiKey);
-        return memberRepository.save(member);
-    }
+    fun findAll(): List<Member> = memberRepository.findAll()
 
-    public Optional<Member> findByUsername(String username) {
-        return memberRepository.findByUsername(username);
-    }
-
-    public Optional<Member> findByApiKey(String apiKey) {
-        return memberRepository.findByApiKey(apiKey);
-    }
-
-    public String genAccessToken(Member member) {
-        return authTokenService.genAccessToken(member);
-    }
-
-    public Map<String, Object> payloadOrNull(String jwt) {
-        return authTokenService.payloadOrNull(jwt);
-    }
-
-    public Optional<Member> findById(int id) {
-        return memberRepository.findById(id);
-    }
-
-    public List<Member> findAll() {
-        return memberRepository.findAll();
-    }
-
-    public void checkPassword(String inputPassword, String rawPassword) {
-        if(!passwordEncoder.matches(inputPassword, rawPassword)) {
-            throw new ServiceException("401-2", "비밀번호가 일치하지 않습니다.");
+    fun checkPassword(inputPassword: String?, rawPassword: String?) {
+        if (!passwordEncoder.matches(
+                inputPassword,
+                rawPassword)) {
+            throw ServiceException("401-2", "비밀번호가 일치하지 않습니다.")
         }
     }
 }
