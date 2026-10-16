@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 
 @JvmRecord
 data class PostCommentDto(
-    val id: Int,
+    val id: Int?,
     val content: String,
     val createDate: LocalDateTime,
     val modifyDate: LocalDateTime

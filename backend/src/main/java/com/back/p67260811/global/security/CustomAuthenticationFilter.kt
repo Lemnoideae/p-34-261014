@@ -104,7 +104,7 @@ class CustomAuthenticationFilter(
             memberService.payloadOrNull(accessToken)?.let { payload ->
                 Member(
                     payload["id"] as Int,
-                    payload["username"] as String?,
+                    payload["username"] as String,
                     payload["nickname"] as String?
                 )
             }
@@ -126,9 +126,9 @@ class CustomAuthenticationFilter(
         val user = SecurityUser(
             id = member.id,
             nickname = member.nickname,
-            username = member.username,
+            username = member.username ?: "",
             password = member.password ?: "",
-            authorities = member.getAuthorities()
+            authorities = member.authorities
         )
 
         val authentication = UsernamePasswordAuthenticationToken(

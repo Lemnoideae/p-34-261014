@@ -1,69 +1,48 @@
-package com.back.p67260811.domain.member.entity;
+package com.back.p67260811.domain.member.entity
 
-import com.back.p67260811.global.jpa.entity.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import com.back.p67260811.global.jpa.entity.BaseEntity
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-@NoArgsConstructor
 @Entity
-public class Member extends BaseEntity {
-
+class Member(
     @Column(unique = true)
-    private String username;
-    private String password;
-    private String nickname;
+    var username: String,
+    var password: String?,
+    var nickname: String?,
     @Column(unique = true)
-    private String apiKey; // 나중에 활용 -> 리프레시 토큰
+    var apiKey: String?
+) : BaseEntity() {
 
-    public Member(int id, String username, String nickname) {
-        this.setId(id);
-        this.username = username;
-        this.nickname = nickname;
+    constructor(id: Int?, username: String, nickname: String?)
+            : this(username, null, nickname, null) {
+        this.id = id
+        this.username = username
+        this.nickname = nickname
     }
 
-    public Member(String username, String password, String nickname) {
-        this.username = username;
-        this.password = password;
-        this.nickname = nickname;
+    constructor(username: String, password: String?, nickname: String?)
+            : this(username, password, nickname, null) {
+        this.username = username
+        this.password = password
+        this.nickname = nickname
     }
 
-    public Member(String username, String password, String nickname, String apiKey) {
-        this(username, password, nickname);
-        this.apiKey = apiKey;
-    }
 
-    public boolean isAdmin() {
-        return "admin".equals(username);
-    }
+    val isAdmin: Boolean
+        get() = "admin" == username
 
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> authorities = new ArrayList<>();
+    val authorities: Collection<GrantedAuthority>
+        get() {
+            val authorities: MutableList<GrantedAuthority> =
+                ArrayList()
 
-        if (isAdmin()) {
-            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+            if (this.isAdmin) {
+                authorities.add(SimpleGrantedAuthority("ROLE_ADMIN"))
+            }
+
+            return authorities
         }
-
-        return authorities;
-    }
-
-    public String getApiKey() {
-        return apiKey;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getUsername() { return username; }
 }

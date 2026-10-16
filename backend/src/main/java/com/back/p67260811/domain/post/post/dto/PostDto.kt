@@ -5,13 +5,13 @@ import java.time.LocalDateTime
 
 @JvmRecord
 data class PostDto(
-    val id: Int,
+    val id: Int?,
     val createDate: LocalDateTime,
     val modifyDate: LocalDateTime,
     val title: String,
     val content: String,
-    val nickname: String,
-    val username: String
+    val nickname: String?,
+    val username: String?
 ) {
     constructor(post: Post) : this(
         post.id,
