@@ -1,35 +1,25 @@
-package com.back.p67260811.domain.post.comment.entity;
+package com.back.p67260811.domain.post.comment.entity
 
-import com.back.p67260811.domain.post.post.entity.Post;
-import com.back.p67260811.global.jpa.entity.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ManyToOne;
+import com.back.p67260811.domain.post.post.entity.Post
+import com.back.p67260811.global.jpa.entity.BaseEntity
+import jakarta.persistence.Entity
+import jakarta.persistence.FetchType
+import jakarta.persistence.ManyToOne
 
 @Entity
-public class PostComment extends BaseEntity {
-    private String content;
+class PostComment(
+    var content: String,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Post post;
+    var post: Post
+) : BaseEntity() {
 
-    public PostComment() {}
-
-    public PostComment(String content, Post post) {
-        this.content = content;
-        this.post = post;
+    init {
+        this.content = content
+        this.post = post
     }
 
-    public void modify(String content) {
-        this.content = content;
+    fun modify(content: String) {
+        this.content = content
     }
-
-    public String getContent() {
-        return content;
-    }
-
-    public Post getPost() {
-        return post;
-    }
-
 }

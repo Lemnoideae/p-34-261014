@@ -5,7 +5,6 @@ import com.back.p67260811.domain.post.comment.entity.PostComment
 import com.back.p67260811.global.exception.ServiceException
 import com.back.p67260811.global.jpa.entity.BaseEntity
 import jakarta.persistence.*
-import java.util.*
 
 @Entity
 class Post(
@@ -24,11 +23,12 @@ class Post(
     private val comments: MutableList<PostComment> = mutableListOf()
 
     // TODO: Optional 제거 및 stream 제거
-    fun findCommentById(id: Int): Optional<PostComment> {
+    fun findCommentById(id: Int): PostComment {
         return comments
             .stream()
             .filter { c: PostComment -> c.id == id }
             .findFirst()
+            .orElseThrow { IllegalArgumentException("해당 댓글이 존재하지 않습니다") }
     }
 
     fun addComment(content: String): PostComment {
@@ -43,17 +43,8 @@ class Post(
         comments.removeIf { comment: PostComment -> comment.id == id }
     }
 
-    fun modifyComment(id: Int, content: String): PostComment {
-        val postComment = comments
-            .stream()
-            .filter { comment: PostComment? -> comment!!.id == id }
-            .findFirst()
-            .orElseThrow<IllegalArgumentException>({IllegalArgumentException("해당 댓글이 존재하지 않습니다")} )
-
-        postComment.modify(content)
-
-        return postComment
-    }
+    fun modifyComment(id: Int, content: String): PostComment =
+        findCommentById(id).apply { modify(content) }
 
     fun update(title: String, content: String) {
         this.title = title
