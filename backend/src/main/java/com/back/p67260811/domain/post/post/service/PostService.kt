@@ -1,62 +1,61 @@
-package com.back.p67260811.domain.post.post.service;
+package com.back.p67260811.domain.post.post.service
 
-import com.back.p67260811.domain.member.entity.Member;
-import com.back.p67260811.domain.post.comment.entity.PostComment;
-import com.back.p67260811.domain.post.post.entity.Post;
-import com.back.p67260811.domain.post.post.repository.PostRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
+import com.back.p67260811.domain.member.entity.Member
+import com.back.p67260811.domain.post.comment.entity.PostComment
+import com.back.p67260811.domain.post.post.entity.Post
+import com.back.p67260811.domain.post.post.repository.PostRepository
+import org.springframework.stereotype.Service
 
 @Service
-@RequiredArgsConstructor
-public class PostService {
+class PostService(
+    private val postRepository: PostRepository
+) {
 
-    private final PostRepository postRepository;
 
-    public Post write(Member author, String title, String content) {
-        Post post = new Post(author, title, content);
-        return postRepository.save(post);
+    fun write(author: Member, title: String, content: String): Post {
+        val post = Post(author, title, content)
+        return postRepository.save<Post>(post)
     }
 
-    public PostComment writeComment(Post post, String content) {
-        return post.addComment(content);
+    fun writeComment(post: Post, content: String): PostComment {
+        return post.addComment(content)
     }
 
-    public void deleteComment(Post post, int commentId) {
-        post.removeComment(commentId);
+    fun deleteComment(post: Post, commentId: Int) {
+        post.removeComment(commentId)
     }
 
-    public PostComment modifyComment(Post post, int commentId, String content) {
-        return post.modifyComment(commentId, content);
+    fun modifyComment(post: Post, commentId: Int, content: String): PostComment {
+        return post.modifyComment(commentId, content)
     }
 
-    public Optional<Post> findById(int id) {
-        return postRepository.findById(id);
+    fun findById(id: Int): Post {
+        return postRepository.findById(id).orElseThrow {
+            throw IllegalArgumentException("Post not found")
+        }
     }
 
-    public List<Post> findAll() {
-        return postRepository.findAll().reversed();
+    fun findAll(): List<Post> {
+        return postRepository.findAll().reversed()
     }
 
-    public long count() {
-        return postRepository.count();
-    }
-    public void flush() {
-        postRepository.flush();
+    fun count(): Long {
+        return postRepository.count()
     }
 
-    public PostComment findCommentById(Post post, int commentId) {
-        return post.findCommentById(commentId).get();
+    fun flush() {
+        postRepository.flush()
     }
 
-    public void delete(int id) {
-        postRepository.deleteById(id);
+    fun findCommentById(post: Post, commentId: Int): PostComment {
+        return post.findCommentById(commentId)
     }
 
-    public void modify(Post post, String title, String content) {
-        post.update(title, content);
+    fun delete(id: Int) {
+        postRepository.deleteById(id)
+    }
+
+    fun modify(post: Post, title: String, content: String) {
+        post.update(title, content)
     }
 }
