@@ -23,7 +23,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsInRelativeOrder;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -190,6 +191,48 @@ public class ApiV1PostControllerTest {
         // 선택적 검증
         Post post = postRepository.findById(targetId).orElse(null);
         assertThat(post).isNull();
+    }
+
+    @Test
+    @DisplayName("다른 회원은 글을 수정하거나 삭제할 수 없다.")
+    void t10() throws Exception {
+        int targetId = 1;
+
+        mvc.perform(
+                        patch("/api/v1/posts/%d".formatted(targetId))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .header("Authorization", "Bearer user2")
+                                .content("""
+                                        {
+                                            "title": "수정 제목",
+                                            "content": "수정 내용"
+                                        }
+                                        """)
+                )
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.resultCode").value("403-1"));
+
+        mvc.perform(
+                        delete("/api/v1/posts/%d".formatted(targetId))
+                                .header("Authorization", "Bearer user2")
+                )
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.resultCode").value("403-2"));
+
+        Post post = postRepository.findById(targetId).orElseThrow();
+        assertThat(post.getTitle()).isEqualTo("제목1");
+    }
+
+    @Test
+    @DisplayName("로그인하지 않아도 댓글 목록과 단건을 조회할 수 있다.")
+    void t11() throws Exception {
+        mvc.perform(get("/api/v1/posts/1/comments"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].content").value("댓글 1-1"));
+
+        mvc.perform(get("/api/v1/posts/1/comments/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").value("댓글 1-1"));
     }
 
     @Test

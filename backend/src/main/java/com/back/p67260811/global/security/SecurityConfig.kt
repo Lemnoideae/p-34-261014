@@ -1,11 +1,11 @@
 package com.back.p67260811.global.security
 
-import org.springframework.security.config.annotation.web.invoke
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.SecurityFilterChain
@@ -29,9 +29,9 @@ class SecurityConfig(
                 authorize("/favicon.ico", permitAll)
                 authorize("/h2-console/**", permitAll)
                 authorize(HttpMethod.GET, "/api/*/posts", permitAll)
-                authorize(HttpMethod.GET, "/api/*/posts/{id:\\\\d+}", permitAll)
-                authorize(HttpMethod.GET, "/api/*/posts/{postId:\\\\d+}/comments", permitAll)
-                authorize(HttpMethod.GET, "/api/*/posts/{postId:\\\\d+}/comments/{commentId:\\\\d+}", permitAll)
+                authorize(HttpMethod.GET, "/api/*/posts/{id:\\d+}", permitAll)
+                authorize(HttpMethod.GET, "/api/*/posts/{postId:\\d+}/comments", permitAll)
+                authorize(HttpMethod.GET, "/api/*/posts/{postId:\\d+}/comments/{commentId:\\d+}", permitAll)
                 authorize(HttpMethod.POST, "/api/v1/members/login", permitAll)
                 authorize(HttpMethod.POST, "/api/v1/members/join", permitAll)
                 authorize(HttpMethod.DELETE, "/api/v1/members/logout", permitAll)

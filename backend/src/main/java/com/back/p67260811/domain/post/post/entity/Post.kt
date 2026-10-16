@@ -1,97 +1,76 @@
-package com.back.p67260811.domain.post.post.entity;
+package com.back.p67260811.domain.post.post.entity
 
-import com.back.p67260811.domain.member.entity.Member;
-import com.back.p67260811.domain.post.comment.entity.PostComment;
-import com.back.p67260811.global.exception.ServiceException;
-import com.back.p67260811.global.jpa.entity.BaseEntity;
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.back.p67260811.domain.member.entity.Member
+import com.back.p67260811.domain.post.comment.entity.PostComment
+import com.back.p67260811.global.exception.ServiceException
+import com.back.p67260811.global.jpa.entity.BaseEntity
+import jakarta.persistence.*
+import java.util.*
 
-import java.util.ArrayList;
-import java.util.List;
-
-@NoArgsConstructor
 @Entity
-public class Post extends BaseEntity {
-    private String title;
-    private String content;
+class Post(
+    @field:ManyToOne(fetch = FetchType.LAZY)
+    var author: Member,
+    var title: String,
+    var content: String
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Member author; // 외래키인 id만 사용
+) : BaseEntity() {
 
-    @OneToMany(mappedBy = "post", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
-    List<PostComment> comments = new ArrayList<>();
+    @OneToMany(
+        mappedBy = "post",
+        cascade = [CascadeType.PERSIST, CascadeType.REMOVE],
+        orphanRemoval = true
+    )
+    private val comments: MutableList<PostComment> = mutableListOf()
 
-    public Post(Member author, String title, String content) {
-        this.author = author;
-        this.title = title;
-        this.content = content;
-    }
-
-    public PostComment findCommentById(int id) {
+    // TODO: Optional 제거 및 stream 제거
+    fun findCommentById(id: Int): Optional<PostComment> {
         return comments
-                .stream()
-                .filter(c -> c.getId() == id)
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다"));
+            .stream()
+            .filter { c: PostComment -> c.id == id }
+            .findFirst()
     }
 
-    public PostComment addComment(String content) {
-        PostComment postComment = new PostComment(content, this);
-        this.comments.add(postComment);
+    fun addComment(content: String): PostComment {
+        val postComment = PostComment(content, this).also {
+            comments.add(it)
+        }
 
-        return postComment;
+        return postComment
     }
 
-    public void removeComment(int id) {
-        comments.removeIf(comment -> comment.getId() == id);
+    fun removeComment(id: Int) {
+        comments.removeIf { comment: PostComment -> comment.id == id }
     }
 
-    public PostComment modifyComment(int id, String content) {
-        PostComment postComment = comments
-                .stream()
-                .filter(comment -> comment.getId() == id)
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다"));
+    fun modifyComment(id: Int, content: String): PostComment {
+        val postComment = comments
+            .stream()
+            .filter { comment: PostComment? -> comment!!.id == id }
+            .findFirst()
+            .orElseThrow<IllegalArgumentException>({IllegalArgumentException("해당 댓글이 존재하지 않습니다")} )
 
-        postComment.modify(content);
+        postComment.modify(content)
 
-        return postComment;
+        return postComment
     }
 
-    public void update(String title, String content) {
-
-        // 비즈니스 규칙
-        this.title = title;
-        this.content = content;
+    fun update(title: String, content: String) {
+        this.title = title
+        this.content = content
     }
 
-    public void checkActorModify(Member actor) {
-        if(!(this.author.getId() == actor.getId())) {
-            throw new ServiceException("403-1", "수정 권한이 없습니다.");
+    fun checkActorModify(actor: Member) {
+        if (author.id == null || author.id != actor.id) {
+            throw ServiceException("403-1", "수정 권한이 없습니다.")
         }
     }
 
-    public void checkActorDelete(Member actor) {
-        if(!(this.author.getId() == actor.getId())) {
-            throw new ServiceException("403-2", "삭제 권한이 없습니다.");
+    fun checkActorDelete(actor: Member) {
+        if (author.id == null || author.id != actor.id) {
+            throw ServiceException("403-2", "삭제 권한이 없습니다.")
         }
     }
 
-    public List<PostComment> getComments() {
-        return comments;
-    }
-
-    public Member getAuthor() {
-        return author;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public String getTitle() {
-        return title;
-    }
+    fun getComments(): List<PostComment> = comments.toList()
 }

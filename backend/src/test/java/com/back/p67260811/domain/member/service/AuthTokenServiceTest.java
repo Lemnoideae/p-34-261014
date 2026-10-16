@@ -88,7 +88,9 @@ public class AuthTokenServiceTest {
     @DisplayName("AuthTokenService를 통해서 accessToken 생성")
     void t4() {
 
-        Member member1 = memberRepository.findByUsername("user3").get();
+        Member member1 = memberRepository.saveAndFlush(
+                new Member("auth-token-test", null, "Auth Token Test", "auth-token-test")
+        );
         String accessToken = authTokenService.genAccessToken(member1);
         assertThat(accessToken).isNotBlank();
 
@@ -97,11 +99,30 @@ public class AuthTokenServiceTest {
         assertThat(payload).containsAllEntriesOf(
                 Map.of(
                         "id", member1.getId(),
-                        "username", member1.getUsername()
+                        "username", member1.getUsername(),
+                        "nickname", member1.getNickname()
                 )
         );
 
         System.out.println("accessToken = " + accessToken);
 
+    }
+
+    @Test
+    @DisplayName("잘못된 accessToken의 payload는 null이다.")
+    void t5() {
+        assertThat(authTokenService.payloadOrNull("not-a-jwt")).isNull();
+    }
+
+    @Test
+    @DisplayName("만료된 accessToken의 payload는 null이다.")
+    void t6() {
+        String expiredToken = Ut.jwt.toString(
+                secretPattern,
+                -1,
+                Map.of("id", 1, "username", "expired", "nickname", "Expired")
+        );
+
+        assertThat(authTokenService.payloadOrNull(expiredToken)).isNull();
     }
 }

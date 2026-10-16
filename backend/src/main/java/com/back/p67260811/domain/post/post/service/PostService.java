@@ -49,7 +49,7 @@ public class PostService {
     }
 
     public PostComment findCommentById(Post post, int commentId) {
-        return post.findCommentById(commentId);
+        return post.findCommentById(commentId).get();
     }
 
     public void delete(int id) {
