@@ -22,7 +22,7 @@ class ApiV1PostCommentController(
     fun list(
         @PathVariable postId: Int
     ): List<PostCommentDto> = postService.findById(postId)
-        .getComments().reversed().map { PostCommentDto(it) }
+        .getComments().sortedByDescending { it.id }.map { PostCommentDto(it) }
 
     @GetMapping("/{commentId}")
     fun item(

@@ -228,7 +228,7 @@ public class ApiV1PostControllerTest {
     void t11() throws Exception {
         mvc.perform(get("/api/v1/posts/1/comments"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].content").value("댓글 1-1"));
+                .andExpect(jsonPath("$[0].content").value("댓글 1-3"));
 
         mvc.perform(get("/api/v1/posts/1/comments/1"))
                 .andExpect(status().isOk())
